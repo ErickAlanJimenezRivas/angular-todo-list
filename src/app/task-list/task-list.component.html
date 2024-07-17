@@ -1,0 +1,60 @@
+<div>
+  <!-- Lista de tareas pendientes -->
+  <h3>Tareas Pendientes</h3>
+
+  <!-- Verificar si hay tareas pendientes para mostrar -->
+  <ng-container *ngIf="tasks.length > 0; else noTasks">
+    <ul class="list-group">
+      <li *ngFor="let task of tasks" class="list-group-item d-flex justify-content-between">
+        <!-- Contenido de la tarea pendiente -->
+        <div>Tarea: <span class="badge text-bg-info"> {{ task.title }}</span></div>
+        <div>Prioridad: <span class="badge text-bg-dark"> {{ task.priority }}</span></div>
+        <div>Tags: <span class="badge text-bg-primary"> {{ task.tags.join(', ') }}</span></div>
+        <div *ngIf="task.startDate">Fecha de comienzo de tarea: <span class="badge text-bg-light">{{ task.startDate | date }}</span></div>
+        <div *ngIf="task.endDate">Fecha de finalización de tarea: <span class="badge text-bg-success">{{ task.endDate | date }}</span></div>
+        <div *ngIf="!task.completed">
+          <label>
+            <input type="checkbox" [(ngModel)]="task.completed" (change)="onCompleteTask(task)"> Tarea completada
+          </label>
+        </div>
+        <button class="btn btn-sm btn-warning" (click)="onEdit(task)" data-bs-toggle="modal" data-bs-target="#editTaskModal">Editar</button>
+        <button class="btn btn-sm btn-danger" (click)="onDelete(task.id)">Borrar</button>
+      </li>
+    </ul>
+  </ng-container>
+
+  <!-- Mensaje de "Sin pendientes" si no hay tareas pendientes -->
+  <ng-template #noTasks>
+    <p>Sin pendientes</p>
+  </ng-template>
+
+  <!-- Lista de tareas completadas -->
+  <div *ngIf="completedTasks.length > 0">
+    <h3>Tareas Completadas</h3>
+    <ul class="list-group">
+      <li *ngFor="let task of completedTasks" class="list-group-item d-flex justify-content-between">
+        <!-- Mostrar detalles de la tarea completada -->
+        <div>Tarea: <span class="badge text-bg-info"> {{ task.title }}</span></div>
+        <div>Prioridad: <span class="badge text-bg-dark"> {{ task.priority }}</span></div>
+        <div>Tags: <span class="badge text-bg-primary"> {{ task.tags.join(', ') }}</span></div>
+        <div>Fecha de finalización de tarea: <span class="badge text-bg-success">{{ task.endDate | date }}</span></div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Modal para editar tarea -->
+  <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editTaskModalLabel">Editar tarea</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Asegúrate de que el modal solo se muestre cuando editingTask tiene valor -->
+          <app-edit-task *ngIf="editingTask" [task]="editingTask" (update)="onUpdateTask($event)" (cancel)="onCancelEdit()"></app-edit-task>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
